@@ -1,21 +1,59 @@
+<script>	
+	import { pb, authStore } from '../../auth.js'
+
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	let email = '';
+	let password = '';
+	let error = '';
+	async function login() {
+	  try {		
+		await pb.collection('users').authWithPassword(email, password);
+		goto('/');
+
+	} catch (err) {
+		error = 'Invalid login credentials';
+	  }
+	}
+	onMount(() => {
+	  authStore.subscribe((store) => {
+		if (store.isLoggedIn) {
+		  goto('/dashboard');
+		}
+	  });
+	});
+  </script>
+
 <svelte:head>
 	<title>About</title>
-	<meta name="description" content="About this app" />
+	<meta name="description" content="Login" />
 </svelte:head>
+<div>
+  <h2>Login</h2>
+  {#if error}
+	<p style="color: red;">{error}</p>
+  {/if}
 
-<div class="text-column">
-	<h1>About this app</h1>
 
-	<p>
-		This is a <a href="https://kit.svelte.dev">SvelteKit</a> app. You can make your own by typing the
-		following into your command line and following the prompts:
-	</p>
-
-	<pre>npm create svelte@latest</pre>
-
-	<p>
-		The page you're looking at is purely static HTML, with no client-side interactivity needed.
-		Because of that, we don't need to load any JavaScript. Try viewing the page's source, or opening
-		the devtools network panel and reloading.
-	</p>
+  <form on:submit|preventDefault={login} class="container">
+	<label class="form-control w-full">
+		<div class="label">
+		  <span class="label-text">Email</span>
+		</div>
+		<input type="text" placeholder="Email" class="input input-bordered w-full"  bind:value={email} required/>		
+	</label>
+	<label class="form-control w-full">
+		<div class="label">
+		  <span class="label-text">Password</span>
+		</div>
+		<input type="password" placeholder="Password" class="input input-bordered w-full"  bind:value={password} required/>		
+	</label>
+	
+	<div class="w-full my-4">
+		<button type="submit" class="btn btn-neutral btn-wide w-full">Login</button>
+	</div>
+  </form>
 </div>
+
+
+
