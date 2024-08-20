@@ -1,26 +1,26 @@
 <script>	
-	import { pb, authStore } from '../../auth.js'
-
+	// import { pb, authStore } from '../../auth.js'
+	// 
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	let email = '';
 	let password = '';
 	let error = '';
 	async function login() {
-	  try {		
-		await pb.collection('users').authWithPassword(email, password);
-		goto('/');
+	//   try {		
+	// 	await pb.collection('users').authWithPassword(email, password);
+	// 	goto('/');
 
-	} catch (err) {
-		error = 'Invalid login credentials';
-	  }
+	// } catch (err) {
+	// 	error = 'Invalid login credentials';
+	//   }
 	}
 	onMount(() => {
-	  authStore.subscribe((store) => {
-		if (store.isLoggedIn) {
-		  goto('/dashboard');
-		}
-	  });
+	//   authStore.subscribe((store) => {
+	// 	if (store.isLoggedIn) {
+	// 	  goto('/dashboard');
+	// 	}
+	//   });
 	});
   </script>
 
