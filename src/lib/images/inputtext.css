@@ -237,10 +237,10 @@
 	background: transparent;
 
 
-	/* color: #FF7B18;
-	opacity: 0; */
-	color: white;
+	color: #FF7B18;
 	opacity: 0;
+	/* color: white;
+	opacity: 0; */
 	text-align: center;
 	-webkit-transition: opacity 0.3s;
 	transition: opacity 0.3s;
