@@ -1,21 +1,41 @@
-<svelte:head>
-	<title>About</title>
-	<meta name="description" content="About this app" />
-</svelte:head>
+<script>	
+import {Html5Qrcode,Html5QrcodeScanner,Html5QrcodeScanType} from "html5-qrcode"
+	import { onMount } from "svelte";
 
-<div class="text-column">
-	<h1>About this app</h1>
+let html5QrcodeScanner
+let config = {
+        fps: 10,
+        qrbox: {width: 100, height: 100},
+        rememberLastUsedCamera: true,
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+    };
 
-	<p>
-		This is a <a href="https://kit.svelte.dev">SvelteKit</a> app. You can make your own by typing the
-		following into your command line and following the prompts:
-	</p>
 
-	<pre>npm create svelte@latest</pre>
+	const onScanSuccess=(decodedText, decodedResult)=>{
+            console.log('****',decodedResult.toString(),'****',decodedText)
+            // const decryptedText=CryptoJS.AES.decrypt(decodedText,"ihavesecret").toString(CryptoJS.enc.Utf8)
+            // text=decryptedText
+            html5QrcodeScanner.clear()          
+    }
+	const onScanFailure=(error)=>{
+        console.log('****',error)
+    }
+	onMount(async()=>{
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", config,false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);        
+})
+</script>
 
-	<p>
-		The page you're looking at is purely static HTML, with no client-side interactivity needed.
-		Because of that, we don't need to load any JavaScript. Try viewing the page's source, or opening
-		the devtools network panel and reloading.
-	</p>
+
+
+
+
+
+
+
+
+
+<div>
+	<h1 class='bg-slate-800 text-white p-2 text-xl uppercase font-bold'>QR Code Scanner</h1>
+	<div id="reader" width="800"/>
 </div>

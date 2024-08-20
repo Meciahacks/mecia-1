@@ -1,17 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Gabarito&family=Handlee&family=Press+Start+2P&family=Raleway&display=swap');
 @tailwind base;
-
 @tailwind components;
-@tailwind utilities;
-body{
-  background-image: url('https://mrwallpaper.com/images/high/among-us-dark-room-b0k52vjc2lmm4zy9.webp');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  font-family: "Press Start 2P", system-ui;
-}
 
-.firefly {
+@tailwind utilities;
+/*.firefly {
   position: fixed;
   left: 50%;
   top: 50%;
@@ -1288,4 +1279,4 @@ body{
     opacity: 1;
     box-shadow: 0 0 2vw 0.4vw yellow;
   }
-}
+} */

@@ -29,6 +29,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"pocketbase": "^0.21.4"
+		"html5-qrcode": "^2.3.8",
+		"pocketbase": "^0.21.4",
+		"qrcode": "^1.5.4"
 	}
 }

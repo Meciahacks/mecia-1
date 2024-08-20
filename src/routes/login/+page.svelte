@@ -1,26 +1,27 @@
 <script>	
-	// import { pb, authStore } from '../../auth.js'
-	// 
+	import { pb, authStore } from '../../auth.js'
+	
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	let email = '';
 	let password = '';
 	let error = '';
 	async function login() {
-	//   try {		
-	// 	await pb.collection('users').authWithPassword(email, password);
-	// 	goto('/');
+	  try {		
+		await pb.collection('users').authWithPassword(email, password);
+		goto('/entry');
 
-	// } catch (err) {
-	// 	error = 'Invalid login credentials';
-	//   }
+	} catch (err) {
+		console.log(err);
+		error = 'Invalid login credentials';
+	  }
 	}
 	onMount(() => {
-	//   authStore.subscribe((store) => {
-	// 	if (store.isLoggedIn) {
-	// 	  goto('/dashboard');
-	// 	}
-	//   });
+	  authStore.subscribe((store) => {
+		if (store.isLoggedIn) {
+		  goto('/entry');
+		}
+	  });
 	});
   </script>
 
@@ -40,13 +41,13 @@
 		<div class="label">
 		  <span class="label-text">Email</span>
 		</div>
-		<input type="text" placeholder="Email" class="input input-bordered w-full"  bind:value={email} required/>		
+		<input type="text" placeholder="Email" class="input input-bordered w-full text-slate-800"  bind:value={email} required/>		
 	</label>
 	<label class="form-control w-full">
 		<div class="label">
 		  <span class="label-text">Password</span>
 		</div>
-		<input type="password" placeholder="Password" class="input input-bordered w-full"  bind:value={password} required/>		
+		<input type="password" placeholder="Password" class="input input-bordered w-full text-slate-800"  bind:value={password} required/>		
 	</label>
 	
 	<div class="w-full my-4">

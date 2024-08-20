@@ -235,12 +235,8 @@
 .input__field--kuro {
 	width: 100%;
 	background: transparent;
-
-
-	color: #FF7B18;
+	color: white;
 	opacity: 0;
-	/* color: white;
-	opacity: 0; */
 	text-align: center;
 	-webkit-transition: opacity 0.3s;
 	transition: opacity 0.3s;
@@ -287,14 +283,14 @@ option{
 
 .input__field--kuro:focus + .input__label--kuro::before,
 .input--filled .input__label--kuro::before {
-	-webkit-transform: translate3d(-2%, 0, 0);
-	transform: translate3d(-2%, 0, 0);
+	-webkit-transform: translate3d(-4%, 0, 0);
+	transform: translate3d(-4%, 0, 0);
 }
 
 .input__field--kuro:focus + .input__label--kuro::after,
 .input--filled .input__label--kuro::after {
-	-webkit-transform: translate3d(2%, 0, 0);
-	transform: translate3d(2%, 0, 0);
+	-webkit-transform: translate3d(4%, 0, 0);
+	transform: translate3d(4%, 0, 0);
 }
 .input__field--kuro:focus + .input__label--kuro .input__label-content--kuro,
 .input--filled .input__label-content--kuro {
