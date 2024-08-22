@@ -1,4 +1,43 @@
 <script>
+// @ts-nocheck
+
+  let vElement;
+  let canvasElement;
+  let photoDataUrl = '';
+  async function startWebcam() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      vElement.srcObject = stream;
+      vElement.play();
+    } catch (error) {
+      console.error('Error accessing webcam:', error);
+    }
+  }
+
+  function capturePhoto() {
+    const context = canvasElement.getContext('2d');
+    context.drawImage(vElement, 0, 0, canvasElement.width, canvasElement.height);
+    photoDataUrl = canvasElement.toDataURL('image/png');
+  }
+</script>
+
+<style>
+  video, canvas {
+    width: 100%;
+    max-width: 400px;
+  }
+</style>
+
+<div>
+  <video bind:this={vElement}></video>
+  <button on:click={startWebcam}>Start Webcam</button>
+  <button on:click={capturePhoto}>Capture Photo</button>
+  <canvas bind:this={canvasElement} width="400" height="300"></canvas>
+  {#if photoDataUrl}
+    <img src={photoDataUrl} alt="Captured Photo">
+  {/if}
+</div>
+<!-- <script>
 	import '../lib/images/inputtext.css'
 
 	import { onMount } from "svelte";
@@ -121,8 +160,7 @@ onMount(()=>{
 
 
 
-
 <style>
 </style>
 
-
+ -->
