@@ -1,11 +1,18 @@
 <script>
   import { onMount } from 'svelte';
 
-  let name = '';
-  let addr='',city=''
-  let contact = '';
-  let aadhar = '';
-  let photo = null;
+  let dtRecord={
+	name:'',
+	addr:'',city:'',
+	contact:'',
+	aadhar_number:'',
+	photo:'',
+	comment:'',other:''
+} ;
+ let mesg='',error_mesg=''
+
+
+	let photo = null;
     let photoURL = '';
   let theme=localStorage.getItem('theme') || 'light';;
  const themeList = ['light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter', 'dim', 'nord', 'sunset'];
@@ -34,6 +41,7 @@ function capturePhoto() {
 	canvas.toBlob((blob) => {
 	  photo = blob;
 	  photoURL = URL.createObjectURL(photo);
+	  dtRecord.photo=photoURL
 	});
   }
   onMount(() => {
@@ -41,19 +49,40 @@ function capturePhoto() {
 	const video = document.querySelector('video');
 	navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
 	  video.srcObject = stream;
-	});
-
-
-
-
-
-	
+	});	
   });
 </script>
 <svelte:head>
 	<title>Registration</title>
 	<meta name="description" content="Registration" />
 </svelte:head>
+
+
+
+
+
+
+
+
+
+
+
+{#if mesg}
+	<div role="alert" class="toast toast-middle alert alert-success p-2">
+	<span>{mesg}</span>
+	<div>
+		<button on:click={()=>{mesg=''}} class="btn btn-sm btn-primary">CLOSE</button>
+		</div>
+	</div>
+{/if}
+{#if error_mesg}
+	<div role="alert" class="toast toast-middle alert alert-error">
+	<span>{error_mesg}</span>
+	<div>
+		<button on:click={()=>{error_mesg=''}} class="btn btn-sm btn-primary">CLOSE</button>
+		</div>
+	</div>
+{/if}
 
 <div class="container mx-auto p-4" data-theme={theme}>
 	<div class="container mx-auto p-4">
@@ -68,27 +97,27 @@ function capturePhoto() {
 	 <form>
 		<div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Name</label>
-		  <input type="text" bind:value={name} class="input input-bordered w-full" required />
+
+		  <input type="text" bind:value={dtRecord.name} class="input input-bordered w-full" required />
 		</div>
 		<div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Contact</label>
-		  <input type="contact" bind:value={contact} class="input input-bordered w-full" required />
+		  <input type="contact" bind:value={dtRecord.contact} class="input input-bordered w-full" required />
 		</div>
 		<div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Aadhaar Number</label>
-		  <input type="text" bind:value={aadhar} class="input input-bordered w-full" required pattern="^[2-9]{1}[0-9]{11}$" />
-		  {#if !validateAadhar(aadhar)}
+		  <input type="text" bind:value={dtRecord.aadhar_number} class="input input-bordered w-full" required pattern="^[2-9]{1}[0-9]{11}$" />
+		  {#if !validateAadhar(dtRecord.aadhar_number)}
 			<p class="text-red-500 ml-2">Invalid Aadhaar number</p>
 		  {/if}
 		</div>
 		<div class="mb-4">
-
 			<label class="block ml-2 font-medium mb-2">Address</label>
-			<textarea bind:value={addr} class="textarea textarea-bordered w-full" required></textarea>
+			<textarea bind:value={dtRecord.addr} class="textarea textarea-bordered w-full" required></textarea>
 		</div>
 		<div class="mb-4">
 			<label class="block ml-2 font-medium mb-2">City/Village</label>
-		  	<input type="text" bind:value={city} class="input input-bordered w-full" required />
+		  	<input type="text" bind:value={dtRecord.city} class="input input-bordered w-full" required />
 		</div>
 		<div class={`mb-4 grid ${photoURL?'grid-cols-1 md:grid-cols-2':''}`}>			
 			<div>
@@ -105,6 +134,11 @@ function capturePhoto() {
 				</div>
 			  {/if}
 			</div>
+		</div>
+		<div class="mb-4">
+			<label class="block ml-2 font-medium mb-2">Any Comment</label>
+		  	<input type="text" bind:value={dtRecord.comment} class="input input-bordered w-full" required />
+
 		</div>
 		<div class="flex justify-end border border-primary shadow p-2">
 		<button type="submit" class="btn btn-primary w-full md:w-48 p-1">Submit</button></div>
