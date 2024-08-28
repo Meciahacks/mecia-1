@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
 
+  import { supabase } from '../../auth';
   let dtRecord={
 	name:'',
 	addr:'',city:'',
@@ -9,15 +10,12 @@
 	photo:'',
 	comment:'',other:''
 } ;
- let mesg='',error_mesg=''
 
-
-	let photo = null;
+	let mesg='',error_mesg=''
+	let photo = null,loading=false;
     let photoURL = '';
-  let theme=localStorage.getItem('theme') || 'light';;
- const themeList = ['light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter', 'dim', 'nord', 'sunset'];
-   
- 
+  	let theme=localStorage.getItem('theme') || 'light';
+ 	const themeList = ['light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter', 'dim', 'nord', 'sunset'];
    $: {
 	if(theme){
 		document.documentElement.setAttribute('data-theme', theme);
@@ -51,27 +49,54 @@ function capturePhoto() {
 	  video.srcObject = stream;
 	});	
   });
+  const onsubmit=async()=>{
+	try {
+		loading=true
+		const { data: photoData, error: photoError } = await supabase.storage
+		  .from('form-photo')
+		  .upload(`photo/${dtRecord.name}_${Math.random()}.jpg`, photo);
+		if (photoError) {
+		  console.error('Error uploading photo:', photoError.message);
+		  return;
+		}
+		dtRecord.photo=photoData.path
+		const { data: userData, error: userError } = await supabase
+		  .from('DataTble')
+		  .insert(dtRecord);
+		if (userError) {
+		  console.error('Error saving user data:', userError.message);
+
+		  mesg=''
+		  error_mesg=userError.message
+		  return;
+		}
+		mesg='Form submitted successfully!';
+		error_mesg=''
+	  } catch (error) {
+		mesg=''
+		error_mesg=error.message
+		console.error('An unexpected error occurred:', error.message);
+	  } 
+	  finally{
+		loading=false
+	  }
+  }
 </script>
 <svelte:head>
 	<title>Registration</title>
 	<meta name="description" content="Registration" />
 </svelte:head>
 
-
-
-
-
-
-
-
-
-
-
+{#if loading}
+	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
+	  <div class="loading loading-spinner text-primary w-14"></div>
+	</div>
+  {/if}
 {#if mesg}
 	<div role="alert" class="toast toast-middle alert alert-success p-2">
 	<span>{mesg}</span>
 	<div>
-		<button on:click={()=>{mesg=''}} class="btn btn-sm btn-primary">CLOSE</button>
+		<button on:click={()=>{mesg=''}} class="btn btn-sm btn-secondary p-1">CLOSE</button>
 		</div>
 	</div>
 {/if}
@@ -87,17 +112,16 @@ function capturePhoto() {
 <div class="container mx-auto p-4" data-theme={theme}>
 	<div class="container mx-auto p-4">
 		<h1 class="text-2xl font-bold mb-4">Select Theme</h1>
-		<select bind:value={theme} class="select select-bordered w-full">
+		<select bind:value={theme} class="select select-bordered w-full">			
 			{#each themeList as themeOption}
 			<option value={themeOption}>{themeOption}</option>
 			{/each}
 		</select>
 	</div>
   	<h1 class="text-2xl font-bold mb-4">User Information Form</h1>
-	 <form>
+	<form on:submit|preventDefault={onsubmit}>
 		<div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Name</label>
-
 		  <input type="text" bind:value={dtRecord.name} class="input input-bordered w-full" required />
 		</div>
 		<div class="mb-4">
@@ -106,7 +130,7 @@ function capturePhoto() {
 		</div>
 		<div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Aadhaar Number</label>
-		  <input type="text" bind:value={dtRecord.aadhar_number} class="input input-bordered w-full" required pattern="^[2-9]{1}[0-9]{11}$" />
+		  <input type="text" bind:value={dtRecord.aadhar_number} class="input input-bordered w-full" required />
 		  {#if !validateAadhar(dtRecord.aadhar_number)}
 			<p class="text-red-500 ml-2">Invalid Aadhaar number</p>
 		  {/if}

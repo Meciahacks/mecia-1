@@ -26,15 +26,8 @@
 	<title>Login</title>
 	<meta name="description" content="Login" />
 </svelte:head>
-<div>
-
-
-
-
-
-
-
-  {#if loading}
+<div>	
+	{#if loading}
 	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
 	  <div class="loading loading-spinner text-primary w-14"></div>
 	</div>
