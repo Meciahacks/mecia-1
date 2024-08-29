@@ -5,9 +5,9 @@ import {Html5Qrcode,Html5QrcodeScanner,Html5QrcodeScanType} from "html5-qrcode"
 let html5QrcodeScanner
 let config = {
         fps: 10,
-        qrbox: {width: 100, height: 100},
+        qrbox: {width: 250, height: 250},
         rememberLastUsedCamera: true,
-        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA,Html5QrcodeScanType.SCAN_TYPE_FILE]
     };
 
 

@@ -2,27 +2,19 @@
   import { onMount } from 'svelte';
 
   import { supabase } from '../../auth';
+  import {page} from '$app/stores'
   let dtRecord={
 	name:'',
 	addr:'',city:'',
 	contact:'',
-	aadhar_number:'',
-	photo:'',
-	comment:'',other:''
+	aadhar_number:'',	photo:'',	comment:'',other:''
 } ;
+
 
 	let mesg='',error_mesg=''
 	let photo = null,loading=false;
     let photoURL = '';
-  	let theme=localStorage.getItem('theme') || 'light';
- 	const themeList = ['light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter', 'dim', 'nord', 'sunset'];
-   $: {
-	if(theme){
-		document.documentElement.setAttribute('data-theme', theme);
-		localStorage.setItem('theme', theme);
-	}}
-
-  function validateAadhar(aadhar) {
+   	function validateAadhar(aadhar) {
 	const regex = /^[2-9]{1}[0-9]{11}$/;
 	return regex.test(aadhar);
   }
@@ -42,8 +34,11 @@ function capturePhoto() {
 	  dtRecord.photo=photoURL
 	});
   }
-  onMount(() => {
-	theme = localStorage.getItem('theme') || 'light';
+
+
+
+  onMount(() => {	
+	console.log('****',$page.url.searchParams.get('id'))	
 	const video = document.querySelector('video');
 	navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
 	  video.srcObject = stream;
@@ -72,6 +67,18 @@ function capturePhoto() {
 		}
 		mesg='Form submitted successfully!';
 		error_mesg=''
+		dtRecord={
+		
+			name:'',
+			addr:'',city:'',
+			contact:'',
+			aadhar_number:'',
+			photo:'',
+			comment:'',other:''
+		} ;
+		photo=null
+
+		photoURL=''
 	  } catch (error) {
 		mesg=''
 		error_mesg=error.message
@@ -86,12 +93,11 @@ function capturePhoto() {
 	<title>Registration</title>
 	<meta name="description" content="Registration" />
 </svelte:head>
-
 {#if loading}
 	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
 	  <div class="loading loading-spinner text-primary w-14"></div>
 	</div>
-  {/if}
+{/if}
 {#if mesg}
 	<div role="alert" class="toast toast-middle alert alert-success p-2">
 	<span>{mesg}</span>
@@ -99,6 +105,7 @@ function capturePhoto() {
 		<button on:click={()=>{mesg=''}} class="btn btn-sm btn-secondary p-1">CLOSE</button>
 		</div>
 	</div>
+
 {/if}
 {#if error_mesg}
 	<div role="alert" class="toast toast-middle alert alert-error">
@@ -108,16 +115,7 @@ function capturePhoto() {
 		</div>
 	</div>
 {/if}
-
-<div class="container mx-auto p-4" data-theme={theme}>
-	<div class="container mx-auto p-4">
-		<h1 class="text-2xl font-bold mb-4">Select Theme</h1>
-		<select bind:value={theme} class="select select-bordered w-full">			
-			{#each themeList as themeOption}
-			<option value={themeOption}>{themeOption}</option>
-			{/each}
-		</select>
-	</div>
+<div class="container mx-auto p-4">
   	<h1 class="text-2xl font-bold mb-4">User Information Form</h1>
 	<form on:submit|preventDefault={onsubmit}>
 		<div class="mb-4">
@@ -161,7 +159,7 @@ function capturePhoto() {
 		</div>
 		<div class="mb-4">
 			<label class="block ml-2 font-medium mb-2">Any Comment</label>
-		  	<input type="text" bind:value={dtRecord.comment} class="input input-bordered w-full" required />
+		  	<input type="text" bind:value={dtRecord.comment} class="input input-bordered w-full"/>
 
 		</div>
 		<div class="flex justify-end border border-primary shadow p-2">
