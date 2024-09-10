@@ -4,13 +4,15 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
     import { authStore } from "../auth";
+    import logo from '$lib/images/logo.png'
   	let user
     const unsubscribe = authStore.subscribe(value => {
        user = value;
      });
+
+
     const logout=async()=>{    
         await authStore.logout();
-
         user=''
         goto('/login');
 	}
@@ -22,10 +24,10 @@ onMount(() => {
 </script>
 <div class="container bg-primary p-2 text-primary-content mx-auto w-full">
   <nav class="navbar">
-    <div class="navbar-start">
-
-      <a class="uppercase btn btn-ghost text-xl md:text-2xl" href="/">
-        Test Application,Vasad
+    <div class="navbar-start">      
+    <a class="uppercase btn btn-ghost text-xl md:text-2xl" href="/">
+      <img src={logo} class="w-10 h-10" alt="logo" >
+        વારાહી ગ્રુપ, વાસદ
       </a>
     </div>
     {#if user}

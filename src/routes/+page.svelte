@@ -79,7 +79,7 @@ const generateCanvas=(record) =>{
             ctx.font = "bold 18px courier";
 			if(record.name.length>20){
 				const temp1=record.name.split(" ")
-				record.name=temp1[0]+" "+temp1[2]
+				record.name=temp1[0]+" "+temp1[1]
 			}
 			ctx.fillText(record.name,0,(canvas.width-40))
 			ctx.restore();
@@ -105,37 +105,67 @@ const generateCanvas=(record) =>{
 			ctx.fillText('૨૦૨૪',canvas.width/2+8,canvas.height-20)
 			ctx.restore()
         }
-		const drawMiddleImage=async(record,ctx, canvas, headerHeight, footHeight) =>{
-            const img1 = new Image();
-            const img2 = new Image();
-			img1.src = fetchPhotoUrl(record.photo)
-            img2.src = await getQR(record.uuid)
-            img1.onload = function () {
-                img2.onload = function () {
-                    const availableHeight = canvas.height - headerHeight - footHeight
-                    const imgHeight = 110
+	const drawMiddleImage=async(record,ctx, canvas, headerHeight, footHeight) =>{
+		const img1 = new Image();
+		const img2 = new Image();
+		function loadImageAsBase(url) {
+		return fetch(url)
 
-					const imgWidth = 110
-                    const totalWidth = imgWidth * 2 + 20
-                    const startX = canvas.width/2-50
-                    const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
-					// 
-                    // Draw the two images side by side
-                    ctx.drawImage(img1, startX, startY-50, imgWidth, imgHeight);
-                    ctx.drawImage(img2, startX, canvas.height-150, imgWidth, imgHeight);
-                };
-    
+			.then(response => response.blob())
+			.then(blob => {
+				return new Promise((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onloadend = () => resolve(reader.result);
+					reader.onerror = reject;
+					reader.readAsDataURL(blob);
+				});
+			});
+		}
+		const encoded=await loadImageAsBase(fetchPhotoUrl(record.photo))
+		img1.src = encoded
+		img2.src = await getQR(record.uuid)
+		img1.onload = function () {
+			img2.onload = function () {
+				const availableHeight = canvas.height - headerHeight - footHeight
+				const imgHeight = 110
+
+				const imgWidth = 110
+				const totalWidth = imgWidth * 2 + 20
+				const startX = canvas.width/2-50
+				const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
+				// 
+				// Draw the two images side by side
+				ctx.drawImage(img1, startX, startY-50, imgWidth, imgHeight);
+				ctx.drawImage(img2, startX, canvas.height-150, imgWidth, imgHeight);
 			};
-        }
-		const printId=async()=>{ 				
+
+		};
+	}
+		const saveToImage=async(record)=>{ 				
+				await generateCanvas(record)
+				currRecord=''
 				const canvas=document.getElementById('idCardCanvas')
-				const imgData = canvas.toDataURL('image/png');				
+				const imgData = await canvas.toDataURL('image/png');				
 				const url1 = document.createElement('a');
 				url1.href = imgData;
 				url1.download = 'canvas-image.png';
 				url1.click();			//download
 				//download
 		}
+	const printId=()=>{
+			const canvas=document.getElementById('idCardCanvas')
+			const dataUrl = canvas.toDataURL("image/png");//to download
+			const printWindow = window.open('', '_blank');//to urldowload
+			printWindow.document.write('<html><head><title>Print Canvas</title></head><body>');
+			printWindow.document.write('<img src="' + dataUrl + '" style="width:100%;">');
+			printWindow.document.write('</body></html>');
+			printWindow.document.close();
+			printWindow.onload = function() {
+			printWindow.focus();
+			printWindow.print();
+			printWindow.close();
+		};
+}
 </script>
 {#if loading}
 	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
@@ -208,8 +238,8 @@ const generateCanvas=(record) =>{
 				{record.aadhar_number}
 			</td>
 			<td class='text-base-content text-center'>{record.addr}</td>
-
 			<td class='text-base-content text-center'>{record.city}</td>
+
 			<td class='flex justify-center'>
 				{#await getQR(record.uuid)}
 					<p>Fetching QR</p>
@@ -219,7 +249,7 @@ const generateCanvas=(record) =>{
 			</td>
 			<th>
 				<button on:click={()=>{generateCanvas(record)}} class="btn btn-xs uppercase btn-secondary">print</button>								
-				<button on:click={()=>{printId()}} class="btn btn-xs uppercase btn-primary">details</button>
+				<button on:click={()=>{saveToImage(record)}} class="btn btn-xs uppercase btn-primary">SAVE To IMAGE</button>
 			</th>
 		</tr>
 		{/each}
