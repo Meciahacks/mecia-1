@@ -2,15 +2,16 @@
 // @ts-nocheck
 
 import {onMount} from "svelte";
+import logo from '$lib/images/logo.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
-let dataTble
+let dataTble,currRecord=null
 let currentPage=0,perPage=5
 let stRecord=currentPage,endRecord=stRecord+perPage-1
 let totalPage=1,loading=false
 let mesg='',error_mesg=''
-let searchBy='name',searchText=''
 
+let searchBy='name',searchText=''
 const fetchPhotoUrl=(fn)=>{
 	const { data:dt } = supabase.storage.from('form-photo').getPublicUrl(fn);
 	return dt.publicUrl
@@ -52,8 +53,90 @@ const fetchTble=async()=>{
 onMount(()=>{
 	fetchTble()
 })
-</script>
 
+const generateCanvas=(record) =>{
+			currRecord=record
+            const canvas = document.getElementById('idCardCanvas');
+            const ctx = canvas.getContext('2d');
+			// 
+            // Fill background
+			ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+			// 
+            // Header section: Title on the left, logo on the right
+            const headerHeight = 40;  // Set header height
+            const footHeight = 40;  // Set footer height
+			// 
+	        // Add title on the left (align vertically center in header)
+            ctx.font = "bold 20px courier";
+            ctx.fillStyle = "maroon";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle"
+			ctx.save();						
+			ctx.translate(20, canvas.width);
+			ctx.rotate(-Math.PI / 2);
+            ctx.fillText("વારાહી ગ્રુપ, વાસદ", 0, 10);			
+            ctx.font = "bold 18px courier";
+			if(record.name.length>20){
+				const temp1=record.name.split(" ")
+				record.name=temp1[0]+" "+temp1[2]
+			}
+			ctx.fillText(record.name,0,(canvas.width-40))
+			ctx.restore();
+			// 
+            // Add logo on the right (align vertically centr in header)
+            const logo1 = new Image();			
+            logo1.src = logo;
+            logo1.onload = ()=> {
+                const logoWidth = 40;  // Width of the logo
+                const logoHeight = 40; // Height of the logo
+				ctx.drawImage(logo1, canvas.width - logoWidth - 5, 25, logoWidth, logoHeight)
+				ctx.drawImage(logo1, 5, 25, logoWidth, logoHeight)
+				ctx.save()				
+				ctx.fillStyle='#ffd008'
+				ctx.fillRect(0,0,canvas.width,5)
+				ctx.restore()
+				drawMiddleImage(record,ctx, canvas, headerHeight, footHeight);
+            };		
+			ctx.save()
+			ctx.fillStyle='#ffd008'
+			ctx.fillRect(0,canvas.height-40,canvas.width,40)
+			ctx.fillStyle='maroon'
+			ctx.fillText('૨૦૨૪',canvas.width/2+8,canvas.height-20)
+			ctx.restore()
+        }
+		const drawMiddleImage=async(record,ctx, canvas, headerHeight, footHeight) =>{
+            const img1 = new Image();
+            const img2 = new Image();
+			img1.src = fetchPhotoUrl(record.photo)
+            img2.src = await getQR(record.uuid)
+            img1.onload = function () {
+                img2.onload = function () {
+                    const availableHeight = canvas.height - headerHeight - footHeight
+                    const imgHeight = 110
+
+					const imgWidth = 110
+                    const totalWidth = imgWidth * 2 + 20
+                    const startX = canvas.width/2-50
+                    const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
+					// 
+                    // Draw the two images side by side
+                    ctx.drawImage(img1, startX, startY-50, imgWidth, imgHeight);
+                    ctx.drawImage(img2, startX, canvas.height-150, imgWidth, imgHeight);
+                };
+    
+			};
+        }
+		const printId=async()=>{ 				
+				const canvas=document.getElementById('idCardCanvas')
+				const imgData = canvas.toDataURL('image/png');				
+				const url1 = document.createElement('a');
+				url1.href = imgData;
+				url1.download = 'canvas-image.png';
+				url1.click();			//download
+				//download
+		}
+</script>
 {#if loading}
 	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
 	  <div class="loading loading-spinner text-primary w-14"></div>
@@ -82,7 +165,9 @@ onMount(()=>{
 		<select bind:value={searchBy} class="join-item select p-2 select-bordered text-base-content w-1/4">
 			<option value="name">Name</option>
 			<option value="contact">Contact</option>
-			<option value="aadhar_number">Aadhaar Number</option>
+			<!--
+				 <option value="aadhar_number">Aadhaar Number</option>
+			 -->
 			<option value="city">City/Village</option>
 		</select>
 		<button on:click={()=>{fetchTble()}} class="join-item p-2 btn btn-primary md:w-48" type='button'>SEARCH</button>
@@ -123,16 +208,18 @@ onMount(()=>{
 				{record.aadhar_number}
 			</td>
 			<td class='text-base-content text-center'>{record.addr}</td>
+
 			<td class='text-base-content text-center'>{record.city}</td>
 			<td class='flex justify-center'>
-				{#await getQR(record.id)}
+				{#await getQR(record.uuid)}
 					<p>Fetching QR</p>
 				{:then rr} 					
 					<img src={rr} alt="" srcset="">
 				{/await}
 			</td>
 			<th>
-				<button class="btn btn-ghost btn-xs">details</button>
+				<button on:click={()=>{generateCanvas(record)}} class="btn btn-xs uppercase btn-secondary">print</button>								
+				<button on:click={()=>{printId()}} class="btn btn-xs uppercase btn-primary">details</button>
 			</th>
 		</tr>
 		{/each}
@@ -149,13 +236,36 @@ onMount(()=>{
 			</tr>
 		</tfoot>
 	</table>
+	
 	</div>
-{/if}
+{/if} 
 
+
+
+
+
+
+
+
+
+
+<div class={`modal ${currRecord?'modal-open':''}`}>
+	<div class="modal-box">
+		<h2 class="text-lg font-bold">Dialog Title</h2>
+		<div class="flex justify-center px-2 py-2">
+			<canvas id="idCardCanvas" height="350" width="200" class='border border-2'></canvas>
+		</div>
+		<div class="modal-action">
+			<button on:click={()=>{printId()}} class='btn btn-primary'>PRINT</button>
+			<button on:click={()=>{currRecord=null}}  for="dialog" class="btn">Close</button>
+		</div>
+	</div>
+</div>
 <!-- <script>
 	import '../lib/images/inputtext.css'
 
 	import { onMount } from "svelte";
+import { callbackify } from "util";
 	// @ts-ignore
 	let selectedOption=''
 	const shuffleText=(label)=>{

@@ -126,13 +126,13 @@ function capturePhoto() {
 		  <label class="block ml-2 font-medium mb-2">Contact</label>
 		  <input type="contact" bind:value={dtRecord.contact} class="input input-bordered w-full" required />
 		</div>
-		<div class="mb-4">
+		<!-- <div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Aadhaar Number</label>
 		  <input type="text" bind:value={dtRecord.aadhar_number} class="input input-bordered w-full" required />
 		  {#if !validateAadhar(dtRecord.aadhar_number)}
 			<p class="text-red-500 ml-2">Invalid Aadhaar number</p>
 		  {/if}
-		</div>
+		</div> -->
 		<div class="mb-4">
 			<label class="block ml-2 font-medium mb-2">Address</label>
 			<textarea bind:value={dtRecord.addr} class="textarea textarea-bordered w-full" required></textarea>
