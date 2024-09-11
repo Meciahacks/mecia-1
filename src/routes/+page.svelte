@@ -3,14 +3,15 @@
 
 import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
+import logobg from '$lib/images/bg.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 let dataTble,currRecord=null
-let currentPage=0,perPage=5
+let currentPage=0,perPage=20
 let stRecord=currentPage,endRecord=stRecord+perPage-1
 let totalPage=1,loading=false
-let mesg='',error_mesg=''
 
+let mesg='',error_mesg=''
 let searchBy='name',searchText=''
 const fetchPhotoUrl=(fn)=>{
 	const { data:dt } = supabase.storage.from('form-photo').getPublicUrl(fn);
@@ -60,50 +61,57 @@ const generateCanvas=(record) =>{
             const ctx = canvas.getContext('2d');
 			// 
             // Fill background
-			ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-			// 
-            // Header section: Title on the left, logo on the right
-            const headerHeight = 40;  // Set header height
-            const footHeight = 40;  // Set footer height
-			// 
-	        // Add title on the left (align vertically center in header)
-            ctx.font = "bold 20px courier";
-            ctx.fillStyle = "maroon";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle"
-			ctx.save();						
-			ctx.translate(20, canvas.width);
-			ctx.rotate(-Math.PI / 2);
-            ctx.fillText("વારાહી ગ્રુપ, વાસદ", 0, 10);			
-            ctx.font = "bold 18px courier";
-			if(record.name.length>20){
-				const temp1=record.name.split(" ")
-				record.name=temp1[0]+" "+temp1[1]
-			}
-			ctx.fillText(record.name,0,(canvas.width-40))
-			ctx.restore();
-			// 
-            // Add logo on the right (align vertically centr in header)
-            const logo1 = new Image();			
-            logo1.src = logo;
-            logo1.onload = ()=> {
-                const logoWidth = 40;  // Width of the logo
-                const logoHeight = 40; // Height of the logo
-				ctx.drawImage(logo1, canvas.width - logoWidth - 5, 25, logoWidth, logoHeight)
-				ctx.drawImage(logo1, 5, 25, logoWidth, logoHeight)
-				ctx.save()				
-				ctx.fillStyle='#ffd008'
-				ctx.fillRect(0,0,canvas.width,5)
-				ctx.restore()
-				drawMiddleImage(record,ctx, canvas, headerHeight, footHeight);
-            };		
-			ctx.save()
-			ctx.fillStyle='#ffd008'
-			ctx.fillRect(0,canvas.height-40,canvas.width,40)
-			ctx.fillStyle='maroon'
-			ctx.fillText('૨૦૨૪',canvas.width/2+8,canvas.height-20)
-			ctx.restore()
+			const logobg1 = new Image();			
+            logobg1.src = logobg;
+            logobg1.onload = ()=> {
+                ctx.drawImage(logobg1,0,0, canvas.width, canvas.height)
+				// ctx.fillStyle = "#fffff";
+				// ctx.fillRect(0, 0, canvas.width, canvas.height);
+				// 
+				// Header section: Title on the left, logo on the right
+				const headerHeight = 40;  // Set header height
+				const footHeight = 40;  // Set footer height
+				// 
+				// Add title on the left (align vertically center in header)
+				ctx.font = "bold 20px courier";
+				ctx.fillStyle = "#000";
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle"
+				ctx.save();						
+				ctx.translate(20, canvas.width);
+				ctx.rotate(-Math.PI / 2);
+				ctx.fillText("વારાહી ગ્રુપ, વાસદ", 0, 10);			
+				ctx.font = "bold 18px courier";
+				if(record.name.length>20){
+					const temp1=record.name.split(" ")
+					record.name=temp1[0]+" "+temp1[1]
+				}
+				ctx.fillText(record.name,0,(canvas.width-40))
+				ctx.restore();
+				// 
+				// Add logo on the right (align vertically centr in header)
+				// const logo1 = new Image();			
+				// logo1.src = logo;
+				// logo1.onload = ()=> {
+				// 	const logoWidth = 40;  // Width of the logo
+				// 	const logoHeight = 40; // Height of the logo
+				// 	ctx.drawImage(logo1, canvas.width - logoWidth - 5, 25, logoWidth, logoHeight)
+					
+				// 	ctx.drawImage(logo1, 5, 25, logoWidth, logoHeight)
+				// 	ctx.save()				
+				// 	ctx.fillStyle='#ffd008'
+				// 	ctx.fillRect(0,0,canvas.width,5)
+				// 	ctx.restore()
+					drawMiddleImage(record,ctx, canvas, headerHeight, footHeight);
+				// };		
+				// ctx.save()
+				// ctx.fillStyle='#ffd008'
+				// ctx.fillRect(0,canvas.height-48,canvas.width,48)
+				// ctx.fillStyle='maroon'
+				// ctx.fillText('૨૦૨૪',canvas.width/2+8,canvas.height-28)
+				// ctx.restore()
+
+			};
         }
 	const drawMiddleImage=async(record,ctx, canvas, headerHeight, footHeight) =>{
 		const img1 = new Image();
@@ -135,8 +143,8 @@ const generateCanvas=(record) =>{
 				const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
 				// Draw the two images side by side
-				ctx.drawImage(img1, startX, startY-50, imgWidth, imgHeight);
-				ctx.drawImage(img2, startX, canvas.height-150, imgWidth, imgHeight);
+				ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
+				ctx.drawImage(img2, startX, canvas.height-157, imgWidth-10, imgHeight-10);
 			};
 
 		};
@@ -157,7 +165,9 @@ const generateCanvas=(record) =>{
 			const dataUrl = canvas.toDataURL("image/png");//to download
 			const printWindow = window.open('', '_blank');//to urldowload
 			printWindow.document.write('<html><head><title>Print Canvas</title></head><body>');
-			printWindow.document.write('<img src="' + dataUrl + '" style="width:100%;">');
+
+
+			printWindow.document.write('<img src="' + dataUrl + '" style="width:350;height:200">');
 			printWindow.document.write('</body></html>');
 			printWindow.document.close();
 			printWindow.onload = function() {
