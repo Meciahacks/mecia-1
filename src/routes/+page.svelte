@@ -3,14 +3,16 @@
 
 import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
-import logobg from '$lib/images/bg.png'
+
+import logobg from '$lib/images/bg_orange.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 let dataTble,currRecord=null
 let currentPage=0,perPage=20
 let stRecord=currentPage,endRecord=stRecord+perPage-1
-let totalPage=1,loading=false
 
+let totalPage=1,loading=false
+let fontcolor="#000"
 let mesg='',error_mesg=''
 let searchBy='name',searchText=''
 const fetchPhotoUrl=(fn)=>{
@@ -18,7 +20,7 @@ const fetchPhotoUrl=(fn)=>{
 	return dt.publicUrl
 }
 const getQR=async(id)=>{
-	const dt=await toDataURL(''+id)
+	const dt=await toDataURL(''+id,{color:{dark:fontcolor, light: '#00000000'}})
 	return dt
 }
 const calculateNumberOfRecord=()=>{
@@ -74,7 +76,7 @@ const generateCanvas=(record) =>{
 				// 
 				// Add title on the left (align vertically center in header)
 				ctx.font = "bold 20px courier";
-				ctx.fillStyle = "#000";
+				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle"
 				ctx.save();						
@@ -139,12 +141,14 @@ const generateCanvas=(record) =>{
 
 				const imgWidth = 110
 				const totalWidth = imgWidth * 2 + 20
-				const startX = canvas.width/2-50
+				const startX = canvas.width/2-50				
 				const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
 				// Draw the two images side by side
+
+				
 				ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
-				ctx.drawImage(img2, startX, canvas.height-157, imgWidth-10, imgHeight-10);
+				ctx.drawImage(img2, startX, canvas.height-157, imgWidth, imgHeight);
 			};
 
 		};
@@ -167,7 +171,7 @@ const generateCanvas=(record) =>{
 			printWindow.document.write('<html><head><title>Print Canvas</title></head><body>');
 
 
-			printWindow.document.write('<img src="' + dataUrl + '" style="width:350;height:200">');
+			printWindow.document.write('<img src="' + dataUrl + '" style="width:725;height:1040">');
 			printWindow.document.write('</body></html>');
 			printWindow.document.close();
 			printWindow.onload = function() {
