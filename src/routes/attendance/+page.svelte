@@ -7,9 +7,9 @@
 	name:'',
 	addr:'',city:'',
 	contact:'',
+	category:'',
 	aadhar_number:'',	photo:'',	comment:'',other:''
 } ;
-
 
 	let mesg='',error_mesg=''
 	let photo = null,loading=false;
@@ -34,14 +34,11 @@ function capturePhoto() {
 	  dtRecord.photo=photoURL
 	});
   }
-
-
-
   onMount(() => {	
 	console.log('****',$page.url.searchParams.get('id'))	
 	const video = document.querySelector('video');
 	navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-	  video.srcObject = stream;
+		 video.srcObject = stream;
 	});	
   });
   const onsubmit=async()=>{
@@ -76,8 +73,8 @@ function capturePhoto() {
 			photo:'',
 			comment:'',other:''
 		} ;
-		photo=null
 
+		photo=null
 		photoURL=''
 	  } catch (error) {
 		mesg=''
@@ -105,12 +102,12 @@ function capturePhoto() {
 		<button on:click={()=>{mesg=''}} class="btn btn-sm btn-secondary p-1">CLOSE</button>
 		</div>
 	</div>
-
 {/if}
 {#if error_mesg}
 	<div role="alert" class="toast toast-middle alert alert-error">
 	<span>{error_mesg}</span>
 	<div>
+
 		<button on:click={()=>{error_mesg=''}} class="btn btn-sm btn-primary">CLOSE</button>
 		</div>
 	</div>
@@ -119,17 +116,28 @@ function capturePhoto() {
   	<h1 class="text-2xl font-bold mb-4">User Information Form</h1>
 	<form on:submit|preventDefault={onsubmit}>
 		<div class="mb-4">
-		  <label class="block ml-2 font-medium mb-2">Name</label>
-		  <input type="text" bind:value={dtRecord.name} class="input input-bordered w-full" required />
+		  <label class="block ml-2 font-medium mb-2" for="name1">Name</label>
+		  <input type="text" bind:value={dtRecord.name} class="input input-bordered w-full" id="name1" required />
 		</div>
-		<div class="mb-4">
-		  <label class="block ml-2 font-medium mb-2">Contact</label>
-		  <input type="contact" bind:value={dtRecord.contact} class="input input-bordered w-full" required />
+		<div class="mb-4 flex w-full space-x-2">
+			<div class="w-full">
+				<label class="block ml-2 font-medium mb-2" for="contact">Contact</label>
+				<input type="contact" bind:value={dtRecord.contact} class="input input-bordered w-full" id="contact" required />
+			</div>
+			<div class="">
+				<label class="block ml-2 font-medium mb-2 w-full" for="gendr">Category</label>	
+				<select bind:value={dtRecord.category} class="w-48 input input-bordered" id="gendr">
+					<option value="" selected disabled></option>
+					<option value="MALE">MALE</option>
+					<option value="FEMALE">FEMALE</option>
+					<option value="MALE">SPONSOR</option>
+				</select>
+			</div>
 		</div>
 		<!-- <div class="mb-4">
 		  <label class="block ml-2 font-medium mb-2">Aadhaar Number</label>
 		  <input type="text" bind:value={dtRecord.aadhar_number} class="input input-bordered w-full" required />
-		  {#if !validateAadhar(dtRecord.aadhar_number)}
+		  {#if !validateAadhar(dtRecord.aadhar_number)}	
 			<p class="text-red-500 ml-2">Invalid Aadhaar number</p>
 		  {/if}
 		</div> -->

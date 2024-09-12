@@ -3,23 +3,23 @@
 
 import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
-
-import logobg from '$lib/images/bg_orange.png'
+import logobg_orange from '$lib/images/bg_orange.png'
+import logobg_blue from '$lib/images/bg_blue.png'
+import logobg from '$lib/images/bg_sponsor.jpg'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 let dataTble,currRecord=null
 let currentPage=0,perPage=20
-let stRecord=currentPage,endRecord=stRecord+perPage-1
 
+let stRecord=currentPage,endRecord=stRecord+perPage-1
 let totalPage=1,loading=false
-let fontcolor="#000"
 let mesg='',error_mesg=''
 let searchBy='name',searchText=''
 const fetchPhotoUrl=(fn)=>{
 	const { data:dt } = supabase.storage.from('form-photo').getPublicUrl(fn);
 	return dt.publicUrl
 }
-const getQR=async(id)=>{
+const getQR=async(id,fontcolor)=>{
 	const dt=await toDataURL(''+id,{color:{dark:fontcolor, light: '#00000000'}})
 	return dt
 }
@@ -56,7 +56,6 @@ const fetchTble=async()=>{
 onMount(()=>{
 	fetchTble()
 })
-
 const generateCanvas=(record) =>{
 			currRecord=record
             const canvas = document.getElementById('idCardCanvas');
@@ -64,9 +63,14 @@ const generateCanvas=(record) =>{
 			// 
             // Fill background
 			const logobg1 = new Image();			
-            logobg1.src = logobg;
+
+
+
+
+			logobg1.src = (record.category=='SPONSOR')?logobg:((record.category=='MALE')?logobg_orange:logobg_blue);
             logobg1.onload = ()=> {
-                ctx.drawImage(logobg1,0,0, canvas.width, canvas.height)
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(logobg1,0,0, canvas.width, canvas.height+2)
 				// ctx.fillStyle = "#fffff";
 				// ctx.fillRect(0, 0, canvas.width, canvas.height);
 				// 
@@ -75,6 +79,7 @@ const generateCanvas=(record) =>{
 				const footHeight = 40;  // Set footer height
 				// 
 				// Add title on the left (align vertically center in header)
+				let fontcolor=record.category=='MALE'?"#000":'#fff'
 				ctx.font = "bold 20px courier";
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
@@ -133,7 +138,9 @@ const generateCanvas=(record) =>{
 		}
 		const encoded=await loadImageAsBase(fetchPhotoUrl(record.photo))
 		img1.src = encoded
-		img2.src = await getQR(record.uuid)
+
+		let fontcolor=record.category=='MALE'?"#000":'#fff'
+		img2.src = await getQR(record.uuid,fontcolor)
 		img1.onload = function () {
 			img2.onload = function () {
 				const availableHeight = canvas.height - headerHeight - footHeight
@@ -145,8 +152,6 @@ const generateCanvas=(record) =>{
 				const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
 				// Draw the two images side by side
-
-				
 				ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
 				ctx.drawImage(img2, startX, canvas.height-157, imgWidth, imgHeight);
 			};
@@ -171,7 +176,7 @@ const generateCanvas=(record) =>{
 			printWindow.document.write('<html><head><title>Print Canvas</title></head><body>');
 
 
-			printWindow.document.write('<img src="' + dataUrl + '" style="width:725;height:1040">');
+			printWindow.document.write('<img src="' + dataUrl + '" style="width:240;height:387">');
 			printWindow.document.write('</body></html>');
 			printWindow.document.close();
 			printWindow.onload = function() {
@@ -255,7 +260,7 @@ const generateCanvas=(record) =>{
 			<td class='text-base-content text-center'>{record.city}</td>
 
 			<td class='flex justify-center'>
-				{#await getQR(record.uuid)}
+				{#await getQR(record.uuid,"#000")}
 					<p>Fetching QR</p>
 				{:then rr} 					
 					<img src={rr} alt="" srcset="">
