@@ -126,11 +126,11 @@ function capturePhoto() {
 			</div>
 			<div class="">
 				<label class="block ml-2 font-medium mb-2 w-full" for="gendr">Category</label>	
-				<select bind:value={dtRecord.category} class="w-48 input input-bordered" id="gendr">
+				<select bind:value={dtRecord.category} class="w-48 input input-bordered" id="gendr" required>
 					<option value="" selected disabled></option>
 					<option value="MALE">MALE</option>
 					<option value="FEMALE">FEMALE</option>
-					<option value="MALE">SPONSOR</option>
+					<option value="SPONSOR">SPONSOR</option>
 				</select>
 			</div>
 		</div>
