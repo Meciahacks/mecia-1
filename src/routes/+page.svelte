@@ -5,7 +5,7 @@ import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
 import logobg_orange from '$lib/images/bg_orange.png'
 import logobg_blue from '$lib/images/bg_blue.png'
-import logobg from '$lib/images/bg_sponsor.jpg'
+import logobg from '$lib/images/bg_green.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 let dataTble,currRecord=null
@@ -210,6 +210,7 @@ const generateCanvas=(record) =>{
 {/if}
 {#if dataTble}
 	<div class="flex justify-end p-2 my-4 join border-b">
+
 		<input on:change={()=>{fetchTble()}} bind:value={searchText} type="text" class="join-item p-2 input input-bordered w-1/2" placeholder={`search by ${searchBy}`}>
 		<select bind:value={searchBy} class="join-item select p-2 select-bordered text-base-content w-1/4">
 			<option value="name">Name</option>
