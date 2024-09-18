@@ -114,8 +114,7 @@ const generateCanvas=(record) =>{
 				// ctx.save()
 				// ctx.fillStyle='#ffd008'
 				// ctx.fillRect(0,canvas.height-48,canvas.width,48)
-				// ctx.fillStyle='maroon'
-				// ctx.fillText('૨૦૨૪',canvas.width/2+8,canvas.height-28)
+				ctx.fillText('૨૦૨૪',canvas.width/2+5,canvas.height-28)
 				// ctx.restore()
 
 			};
