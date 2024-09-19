@@ -8,6 +8,7 @@ import logobg_blue from '$lib/images/bg_blue.png'
 import logobg from '$lib/images/bg_green.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
+	import { goto } from "$app/navigation";
 let dataTble,currRecord=null
 let currentPage=0,perPage=20
 
@@ -163,14 +164,28 @@ const generateCanvas=(record) =>{
 			url1.click();			//download
 			//download
 	}
-	const removeRecord=async(record)=>{
-		recordToRemove=record.id
-		const { error } = await supabase
-		.from('DataTble')
-		.delete()
-		.eq('id', recordToRemove)
-	}
 
+
+
+
+	const removeRecord=async()=>{
+		try {
+			loading=true
+			const { error } = await supabase
+			.from('DataTble')
+			.delete()
+			.eq('id', recordToRemove)
+			mesg="Successfully Removed"
+			dataTble=null
+			location.reload()
+		} catch (error) {			
+			console.log('****',error)			
+		}
+		finally{
+			recordToRemove=''
+			loading=false			
+		}
+	}
 	const printId=()=>{
 			const canvas=document.getElementById('idCardCanvas')
 			const dataUrl = canvas.toDataURL("image/png");//to download
@@ -192,7 +207,7 @@ const generateCanvas=(record) =>{
 	</div>
 {/if}
 {#if mesg}
-	<div role="alert" class="toast toast-middle alert alert-success p-2">
+	<div role="alert" class="toast toast-middle alert alert-success p-2 z-50">
 	<span>{mesg}</span>
 	<div>
 		<button on:click={()=>{mesg=''}} class="btn btn-sm btn-secondary p-2">CLOSE</button>
