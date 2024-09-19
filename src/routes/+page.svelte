@@ -15,6 +15,7 @@ let stRecord=currentPage,endRecord=stRecord+perPage-1
 let totalPage=1,loading=false
 let mesg='',error_mesg=''
 let searchBy='name',searchText=''
+let recordToRemove=''
 const fetchPhotoUrl=(fn)=>{
 	const { data:dt } = supabase.storage.from('form-photo').getPublicUrl(fn);
 	return dt.publicUrl
@@ -63,9 +64,6 @@ const generateCanvas=(record) =>{
 			// 
             // Fill background
 			const logobg1 = new Image();			
-
-
-
 
 			logobg1.src = (record.category=='SPONSOR')?logobg:((record.category=='MALE')?logobg_orange:logobg_blue);
             logobg1.onload = ()=> {
@@ -124,7 +122,6 @@ const generateCanvas=(record) =>{
 		const img2 = new Image();
 		function loadImageAsBase(url) {
 		return fetch(url)
-
 			.then(response => response.blob())
 			.then(blob => {
 				return new Promise((resolve, reject) => {
@@ -137,16 +134,14 @@ const generateCanvas=(record) =>{
 		}
 		const encoded=await loadImageAsBase(fetchPhotoUrl(record.photo))
 		img1.src = encoded
-
 		let fontcolor=record.category=='MALE'?"#000":'#fff'
 		img2.src = await getQR(record.uuid,fontcolor)
 		img1.onload = function () {
 			img2.onload = function () {
 				const availableHeight = canvas.height - headerHeight - footHeight
 				const imgHeight = 110
-
 				const imgWidth = 110
-				const totalWidth = imgWidth * 2 + 20
+  				const totalWidth = imgWidth * 2 + 20
 				const startX = canvas.width/2-50				
 				const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
@@ -157,24 +152,30 @@ const generateCanvas=(record) =>{
 
 		};
 	}
-		const saveToImage=async(record)=>{ 				
-				await generateCanvas(record)
-				currRecord=''
-				const canvas=document.getElementById('idCardCanvas')
-				const imgData = await canvas.toDataURL('image/png');				
-				const url1 = document.createElement('a');
-				url1.href = imgData;
-				url1.download = 'canvas-image.png';
-				url1.click();			//download
-				//download
-		}
+	const saveToImage=async(record)=>{ 				
+			await generateCanvas(record)
+			currRecord=''
+			const canvas=document.getElementById('idCardCanvas')
+			const imgData = await canvas.toDataURL('image/png');				
+			const url1 = document.createElement('a');
+			url1.href = imgData;
+			url1.download = 'canvas-image.png';
+			url1.click();			//download
+			//download
+	}
+	const removeRecord=async(record)=>{
+		recordToRemove=record.id
+		const { error } = await supabase
+		.from('DataTble')
+		.delete()
+		.eq('id', recordToRemove)
+	}
+
 	const printId=()=>{
 			const canvas=document.getElementById('idCardCanvas')
 			const dataUrl = canvas.toDataURL("image/png");//to download
 			const printWindow = window.open('', '_blank');//to urldowload
 			printWindow.document.write('<html><head><title>Print Canvas</title></head><body>');
-
-
 			printWindow.document.write('<img src="' + dataUrl + '" style="width:240;height:387">');
 			printWindow.document.write('</body></html>');
 			printWindow.document.close();
@@ -268,6 +269,7 @@ const generateCanvas=(record) =>{
 			</td>
 			<th>
 				<button on:click={()=>{generateCanvas(record)}} class="btn btn-xs uppercase btn-secondary">print</button>	
+				<button on:click={()=>{recordToRemove=record.id}} class="btn btn-xs uppercase bg-orange-500 text-white hover:bg-orange-400">DELETE</button>
 				<button on:click={()=>{saveToImage(record)}} class="btn btn-xs uppercase btn-primary">SAVE To IMAGE</button>				
 			</th>
 		</tr>
@@ -295,8 +297,17 @@ const generateCanvas=(record) =>{
 
 
 
-
-
+<dialog id="my_modal_5" class={ recordToRemove?"modal modal-open modal-bottom sm:modal-middle":"modal modal-bottom sm:modal-middle"}>
+	<div class="modal-box">
+	  <h2 class="text-lg font-bold">Do You Really want To Remove Record?</h2>
+	  <div class="modal-action">
+		<form method="dialog">
+		  <button on:click={()=>{removeRecord()}} class="btn btn-primary">Confirm</button>
+		  <button on:click={()=>{recordToRemove=''}} class="btn">Close</button>
+		</form>
+	  </div>
+	</div>
+  </dialog>
 
 <div class={`modal ${currRecord?'modal-open':''}`}>
 	<div class="modal-box">
@@ -304,6 +315,7 @@ const generateCanvas=(record) =>{
 		<div class="flex justify-center px-2 py-2">
 			<canvas id="idCardCanvas" height="350" width="200" class='border border-2'></canvas>
 		</div>
+
 		<div class="modal-action">
 			<button on:click={()=>{printId()}} class='btn btn-primary'>PRINT</button>
 			<button on:click={()=>{currRecord=null}}  for="dialog" class="btn">Close</button>
