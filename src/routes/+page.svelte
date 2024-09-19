@@ -267,8 +267,8 @@ const generateCanvas=(record) =>{
 				{/await}
 			</td>
 			<th>
-				<button on:click={()=>{generateCanvas(record)}} class="btn btn-xs uppercase btn-secondary">print</button>								
-				<button on:click={()=>{saveToImage(record)}} class="btn btn-xs uppercase btn-primary">SAVE To IMAGE</button>
+				<button on:click={()=>{generateCanvas(record)}} class="btn btn-xs uppercase btn-secondary">print</button>	
+				<button on:click={()=>{saveToImage(record)}} class="btn btn-xs uppercase btn-primary">SAVE To IMAGE</button>				
 			</th>
 		</tr>
 		{/each}
