@@ -50,7 +50,13 @@ let config = {
 	onMount(async()=>{
         html5QrcodeScanner = new Html5QrcodeScanner("reader", config,false);
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);        
-})
+    })
+    const resetQR=()=>{
+        html5QrcodeScanner.clear()
+        currentRecord=''
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", config,false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);        
+    }
 </script>
 {#if loading}
 	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
@@ -96,6 +102,9 @@ let config = {
             <div>
                 <p class="bg-primary text-primary-content w-full text-center">{currentRecord.addr}</p>                
                 <p class="bg-primary text-primary-content w-full text-center">{currentRecord.city}</p>
+            </div>
+            <div class="my-4 flex justify-center p-2">
+                <button on:click={()=>{resetQR()}} class="btn btn-primary rounded text-primary-content">Reload</button>
             </div>
         </div>        
     {/if}

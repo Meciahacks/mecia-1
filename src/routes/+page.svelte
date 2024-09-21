@@ -10,13 +10,18 @@ import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 	import { goto } from "$app/navigation";
 let dataTble,currRecord=null
-let currentPage=0,perPage=20
 
+let currentPage=0,perPage=20
 let stRecord=currentPage,endRecord=stRecord+perPage-1
 let totalPage=1,loading=false
 let mesg='',error_mesg=''
 let searchBy='name',searchText=''
-let recordToRemove=''
+let recordToRemove='',totalCount=0
+let selectBy='_',selectedOption='Vasad'
+$:{
+	if(selectBy || selectedOption)
+		fetchTble()
+}
 const fetchPhotoUrl=(fn)=>{
 	const { data:dt } = supabase.storage.from('form-photo').getPublicUrl(fn);
 	return dt.publicUrl
@@ -33,13 +38,20 @@ const calculateNumberOfRecord=()=>{
 const fetchTble=async()=>{
 	try { 
 		loading=true
-		let { data: dataTble1,count:count, error } = await supabase
-		.from('DataTble')
-		.select('*',{count:'exact'}).ilike(searchBy,`%${searchText}%`)
-		.range(stRecord, endRecord)
+		const filtr=selectBy=='_'?'%%':`${selectBy}%`
+		const filtr1=selectedOption=='Other'?'%%':`%Vasad%`		
+		let dbquery1= supabase.from('DataTble')
+		.select('*',{count:'exact'}).ilike(searchBy,`%${searchText}%`).ilike('category',filtr)
+		if(selectedOption=='Other')
+			dbquery1=dbquery1.not('city','ilike','Vasad')
+		else
+			dbquery1=dbquery1.ilike('city','%vasad%')
+
+		let { data: dataTble1,count:count, error } = await dbquery1.range(stRecord,endRecord)
 		if(dataTble1){
 			dataTble=dataTble1		
 			totalPage=Math.ceil(count/perPage)				
+			totalCount=count
 		}
 		if(error){
 			console.log('****',error.message);		
@@ -201,6 +213,7 @@ const generateCanvas=(record) =>{
 		};
 }
 </script>
+
 {#if loading}
 	<div class="fixed inset-0 flex items-center justify-center bg-base-100 opacity-50 z-50">
 	  <div class="loading loading-spinner text-primary w-14"></div>
@@ -225,7 +238,6 @@ const generateCanvas=(record) =>{
 {/if}
 {#if dataTble}
 	<div class="flex justify-end p-2 my-4 join border-b">
-
 		<input on:change={()=>{fetchTble()}} bind:value={searchText} type="text" class="join-item p-2 input input-bordered w-1/2" placeholder={`search by ${searchBy}`}>
 		<select bind:value={searchBy} class="join-item select p-2 select-bordered text-base-content w-1/4">
 			<option value="name">Name</option>
@@ -237,6 +249,25 @@ const generateCanvas=(record) =>{
 		</select>
 		<button on:click={()=>{fetchTble()}} class="join-item p-2 btn btn-primary md:w-48" type='button'>SEARCH</button>
 	</div>
+	<div class="flex justify-end p-2 my-4 join border-b">
+		<div class="mx-4 flex gap-2 px-2 py-2">
+			<label class="label cursor-pointer" for="option1">
+				<input type="radio" id="option1" value="Vasad" bind:group={selectedOption} class="radio radio-primary"/>
+				<span class="label-text ml-2">Vasad</span>
+			</label>
+			<label class="label cursor-pointer" for="option2">
+				<input type="radio" id="option2" value="Other" bind:group={selectedOption} class="radio radio-primary"/>
+				<span class="label-text ml-2">Other</span>
+			</label>
+		</div>
+		<select id="selectbycategory" bind:value={selectBy} class="join-item select p-2 select-bordered text-base-content w-1/4">
+			<option selected value="_"></option>
+			<option>MALE</option>
+			<option>FEMALE</option>
+			<option>SPONSOR</option>
+		</select>
+	</div>
+	<div class="bg-primary text-primary-content text-xl p-2 font-bold text-center">Total Entries Done:{totalCount}</div>
 	<div class="overflow-x-auto">
 	<table class="table">
 		<thead>
