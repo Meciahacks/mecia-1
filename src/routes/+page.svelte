@@ -95,17 +95,42 @@ const generateCanvas=(record) =>{
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle"
+				
 				ctx.save();						
 				ctx.translate(20, canvas.width);
 				ctx.rotate(-Math.PI / 2);
-				ctx.fillText("વારાહી ગ્રુપ, વાસદ", 0, 10);			
-				ctx.font = "bold 18px courier";
-				if(record.name.length>20){
-					const temp1=record.name.split(" ")
-					record.name=temp1[0]+" "+temp1[1]
-				}
-				ctx.fillText(record.name,0,(canvas.width-40))
+				ctx.fillText("વારાહી ગ્રુપ, વાસદ", 0, 10);	
 				ctx.restore();
+				if(record.category=='SPONSOR'){
+					ctx.save()
+					ctx.font="bold 20px courier"
+					ctx.fillText('SPONSOR',canvas.width/2,50)
+					ctx.restore()
+					ctx.save()
+					ctx.textAlign='center'
+					ctx.textBaseline='middle'
+					ctx.font="bold 18px courier"
+
+					const temp1=record.name.split(/[\s,.//()]/)
+					for(let indx=0;indx<temp1.length;indx++)
+						ctx.fillText(temp1[indx],canvas.width/2+5,(canvas.height/2)+indx*20)
+					ctx.restore()
+				}
+
+				else{	
+					ctx.font = "bold 18px courier";
+					if(record.name.length>20){
+						const temp1=record.name.split(" ")
+						record.name=temp1[0]+" "+temp1[1]
+					}
+
+					ctx.save();						
+					ctx.translate(20, canvas.width);
+					ctx.rotate(-Math.PI / 2);
+					ctx.fillText(record.name,0,(canvas.width-40))
+					ctx.restore();
+				}
+
 				// 
 				// Add logo on the right (align vertically centr in header)
 				// const logo1 = new Image();			
