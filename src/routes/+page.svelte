@@ -104,7 +104,7 @@ const generateCanvas=(record) =>{
 				if(record.category=='SPONSOR'){
 					ctx.save()
 					ctx.font="bold 20px courier"
-					ctx.fillText('SPONSOR',canvas.width/2,50)
+					ctx.fillText('SPONSOR',canvas.width/2,70)
 					ctx.restore()
 					ctx.save()
 					ctx.textAlign='center'
