@@ -5,7 +5,7 @@ import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
 import logobg_orange from '$lib/images/bg_orange.png'
 import logobg_blue from '$lib/images/bg_blue.png'
-import logobg from '$lib/images/bg_green.png'
+import logobg from '$lib/images/bg_sponsor.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 	import { goto } from "$app/navigation";
