@@ -5,7 +5,7 @@ import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
 import logobg_orange from '$lib/images/bg_orange.png'
 import logobg_blue from '$lib/images/bg_blue.png'
-import logobg from '$lib/images/bg_sponsor.png'
+import logobg from '$lib/images/bg_new1.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 	import { goto } from "$app/navigation";
@@ -81,7 +81,7 @@ const generateCanvas=(record) =>{
 			logobg1.src = (record.category=='SPONSOR')?logobg:((record.category=='MALE')?logobg_orange:logobg_blue);
             logobg1.onload = ()=> {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(logobg1,0,0, canvas.width, canvas.height+2)
+                ctx.drawImage(logobg1,-12,0, canvas.width+24, canvas.height+2)
 				// ctx.fillStyle = "#fffff";
 				// ctx.fillRect(0, 0, canvas.width, canvas.height);
 				// 
@@ -104,7 +104,7 @@ const generateCanvas=(record) =>{
 				if(record.category=='SPONSOR'){
 					ctx.save()
 					ctx.font="bold 20px courier"
-					ctx.fillText('SPONSOR',canvas.width/2,80)
+					ctx.fillText('SPONSOR',canvas.width/2,50)
 					ctx.restore()
 					ctx.save()
 					ctx.textAlign='center'
@@ -113,7 +113,7 @@ const generateCanvas=(record) =>{
 
 					const temp1=record.name.split(/[\s,.//()]/)
 					for(let indx=0;indx<temp1.length;indx++)
-						ctx.fillText(temp1[indx],canvas.width/2+5,(canvas.height/2)+indx*20)
+						ctx.fillText(temp1[indx],canvas.width/2+5,(canvas.height-temp1.length*20-50)+indx*20)
 					ctx.restore()
 				}
 
