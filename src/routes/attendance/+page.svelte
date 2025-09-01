@@ -21,6 +21,7 @@
   function confirmSelection() {
 	dtRecord=selectedIndx
 	isOpenDlg =false;
+	isupdate=true
   }
 	function validateAadhar(aadhar) {
 	const regex = /^[2-9]{1}[0-9]{11}$/;
