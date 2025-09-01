@@ -27,7 +27,7 @@ onMount(() => {
     <div class="navbar-start">      
     <a class="uppercase btn btn-ghost text-xl md:text-2xl" href="/">
       <img src={logo} class="w-10 h-10" alt="logo" >
-        વારાહી ગ્રુપ, વાસદ
+        ધ ન્યૂ ઇંગલિશ સ્કૂલ ટ્રસ્ટ , વાસદ
       </a>
     </div>
     {#if user}

@@ -91,7 +91,7 @@ const generateCanvas=(record) =>{
 				// 
 				// Add title on the left (align vertically center in header)
 				let fontcolor=record.category=='MALE'?"#000":'#fff'
-				ctx.font = "bold 20px courier";
+				ctx.font = "bold 14px courier";
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle"
@@ -99,7 +99,7 @@ const generateCanvas=(record) =>{
 				ctx.save();						
 				ctx.translate(20, canvas.width);
 				ctx.rotate(-Math.PI / 2);
-				ctx.fillText("વારાહી ગ્રુપ, વાસદ", 0, 10);	
+				ctx.fillText("ધ ન્યૂ ઇંગલિશ સ્કૂલ ટ્રસ્ટ, વાસદ", 0, 10);	
 				ctx.restore();
 				if(record.category=='SPONSOR'){
 					ctx.save()
@@ -150,7 +150,8 @@ const generateCanvas=(record) =>{
 				// ctx.save()
 				// ctx.fillStyle='#ffd008'
 				// ctx.fillRect(0,canvas.height-48,canvas.width,48)
-				ctx.fillText('૨૦૨૪',canvas.width/2+5,canvas.height-28)
+				
+				ctx.fillText('૨૦૨૫',canvas.width/2+5,canvas.height-28)
 				// ctx.restore()
 
 			};

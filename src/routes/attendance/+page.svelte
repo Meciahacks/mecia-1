@@ -3,9 +3,14 @@
 
   import { supabase } from '../../auth';
   import {page} from '$app/stores'
+  let isOpenDlg =false;
+  let selectedIndx =0;
+  let optionList=[];
+
   let dtRecord={
 	name:'',
 	addr:'',city:'',
+	
 	contact:'',
 	category:'',
 	aadhar_number:'',	photo:'',	comment:'',other:''
@@ -14,7 +19,11 @@
 	let mesg='',error_mesg=''
 	let photo = null,loading=false;
     let photoURL = '';
-   	function validateAadhar(aadhar) {
+  function confirmSelection() {
+	dtRecord=selectedIndx
+	isOpenDlg =false;
+  }
+	function validateAadhar(aadhar) {
 	const regex = /^[2-9]{1}[0-9]{11}$/;
 	return regex.test(aadhar);
   }
@@ -41,6 +50,34 @@ function capturePhoto() {
 		 video.srcObject = stream;
 	});	
   });
+  const fetchRecord=async(inputtext)=>{
+        loading=true
+        try {
+            let { data: DataTble, error } = await supabase.from('DataTble')
+                .select('*').eq('contact',inputtext)
+
+            console.log('----',DataTble)			
+			if (DataTble.length>1) {
+				DataTble.forEach(rr => {
+					optionList.push(rr)
+				});
+				isOpenDlg=true
+			}
+			else{
+				dtRecord=DataTble[0]
+			}
+            error_mesg=''
+        } catch (error) {
+            console.log('****',error)            
+            error_mesg=error
+        }
+        finally{
+            loading=false
+        }
+    }
+ const fetchByNumber=async(ee)=>{
+	fetchRecord(ee.target.value)
+ } 
   const onsubmit=async()=>{
 	try {
 		loading=true
@@ -107,7 +144,6 @@ function capturePhoto() {
 	<div role="alert" class="toast toast-middle alert alert-error">
 	<span>{error_mesg}</span>
 	<div>
-
 		<button on:click={()=>{error_mesg=''}} class="btn btn-sm btn-primary">CLOSE</button>
 		</div>
 	</div>
@@ -122,7 +158,7 @@ function capturePhoto() {
 		<div class="mb-4 flex w-full space-x-2">
 			<div class="w-full">
 				<label class="block ml-2 font-medium mb-2" for="contact">Contact</label>
-				<input type="contact" bind:value={dtRecord.contact} class="input input-bordered w-full" id="contact" required />
+				<input on:blur={fetchByNumber} type="contact" bind:value={dtRecord.contact} class="input input-bordered w-full" id="contact" required />
 			</div>
 			<div class="">
 				<label class="block ml-2 font-medium mb-2 w-full" for="gendr">Category</label>	
@@ -174,3 +210,29 @@ function capturePhoto() {
 		<button type="submit" class="btn btn-primary w-full md:w-48 p-1">Submit</button></div>
 	  </form>
 </div>
+
+{#if isOpenDlg}
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Select Record</h3>
+      <select bind:value={selectedIndx} class="select select-bordered w-full mt-4">
+        {#each optionList as option}
+          <option value={option}>{option.name}</option>
+        {/each}
+      </select>
+      <div class="modal-action">
+        <button class="btn" on:click={confirmSelection}>OK</button>
+        <button class="btn btn-ghost" on:click={() => isOpenDlg =false}>Cancel</button>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+</div>
+{/if}
