@@ -3,9 +3,9 @@
 
 import {onMount} from "svelte";
 import logo from '$lib/images/logo.png'
-import logobg_orange from '$lib/images/bg_orange.png'
-import logobg_blue from '$lib/images/bg_blue.png'
-import logobg from '$lib/images/bg_new1.png'
+import logobg_male from '$lib/images/bg_male.png'
+import logobg_female from '$lib/images/bg_female (2).png'
+import logobg_sponsor from '$lib/images/bg_sponsor.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
 	import { goto } from "$app/navigation";
@@ -78,7 +78,7 @@ const generateCanvas=(record) =>{
             // Fill background
 			const logobg1 = new Image();			
 
-			logobg1.src = (record.category=='SPONSOR')?logobg:((record.category=='MALE')?logobg_orange:logobg_blue);
+			logobg1.src = (record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female);
             logobg1.onload = ()=> {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(logobg1,-12,0, canvas.width+24, canvas.height+2)
@@ -86,11 +86,11 @@ const generateCanvas=(record) =>{
 				// ctx.fillRect(0, 0, canvas.width, canvas.height);
 				// 
 				// Header section: Title on the left, logo on the right
-				const headerHeight = 40;  // Set header height
+				const headerHeight = 80;  // Set header height
 				const footHeight = 40;  // Set footer height
 				// 
 				// Add title on the left (align vertically center in header)
-				let fontcolor=record.category=='MALE'?"#000":'#fff'
+				let fontcolor=record.category=='MALE'?"#eef":'#fff'
 				ctx.font = "bold 14px courier";
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
@@ -99,7 +99,7 @@ const generateCanvas=(record) =>{
 				ctx.save();						
 				ctx.translate(20, canvas.width);
 				ctx.rotate(-Math.PI / 2);
-				ctx.fillText("ધ ન્યૂ ઇંગલિશ સ્કૂલ ટ્રસ્ટ, વાસદ", 0, 10);	
+				ctx.fillText("આદ્યાશક્તિ ગરબા મહોત્સવ, વાસદ", 0, 10);	
 				ctx.restore();
 				if(record.category=='SPONSOR'){
 					ctx.save()
@@ -173,20 +173,21 @@ const generateCanvas=(record) =>{
 		}
 		const encoded=await loadImageAsBase(fetchPhotoUrl(record.photo))
 		img1.src = encoded
-		let fontcolor=record.category=='MALE'?"#000":'#fff'
+		
+		let fontcolor=record.category=='MALE'?"#eef":'#fff'
 		img2.src = await getQR(record.uuid,fontcolor)
 		img1.onload = function () {
 			img2.onload = function () {
 				const availableHeight = canvas.height - headerHeight - footHeight
-				const imgHeight = 110
-				const imgWidth = 110
+				const imgHeight = 80	
+				const imgWidth = 80
   				const totalWidth = imgWidth * 2 + 20
-				const startX = canvas.width/2-50				
-				const startY = 10+ headerHeight + (availableHeight - imgHeight) / 2
+				const startX = canvas.width/2-40				
+				const startY = 25+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
 				// Draw the two images side by side
 				ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
-				ctx.drawImage(img2, startX, canvas.height-157, imgWidth, imgHeight);
+				ctx.drawImage(img2, startX, canvas.height-140, imgWidth, imgHeight);
 			};
 
 		};
@@ -202,10 +203,6 @@ const generateCanvas=(record) =>{
 			url1.click();			//download
 			//download
 	}
-
-
-
-
 	const removeRecord=async()=>{
 		try {
 			loading=true
@@ -352,7 +349,7 @@ const generateCanvas=(record) =>{
 				<td class='p-2 text-center' colspan="7">
 					<div class="flex justify-center join p-2">
 						<button on:click={()=>{currentPage=(currentPage-1)<0?0:(currentPage-1);calculateNumberOfRecord();}} class="join-item btn-sm btn border-r">«</button>
-						<button class="join-item  btn-sm btn w-24" disabled>{currentPage+1}/{totalPage}</button>
+						<button class="join-item  btn-sm btn w-24" disabled>{currentPage+1}/{totalPage}</button>						
 						<button on:click={()=>{currentPage=(currentPage+1)>=(totalPage-1)?(totalPage-1):(currentPage+1);calculateNumberOfRecord();}} class="join-item  btn-sm btn border-l">»</button>
 					</div>
 				</td>

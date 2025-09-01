@@ -4,7 +4,7 @@
   import { supabase } from '../../auth';
   import {page} from '$app/stores'
   let isOpenDlg =false;
-  let selectedIndx =0;
+  let selectedIndx =0,isupdate=false
   let optionList=[];
 
   let dtRecord={
@@ -15,7 +15,6 @@
 	category:'',
 	aadhar_number:'',	photo:'',	comment:'',other:''
 } ;
-
 	let mesg='',error_mesg=''
 	let photo = null,loading=false;
     let photoURL = '';
@@ -56,7 +55,12 @@ function capturePhoto() {
             let { data: DataTble, error } = await supabase.from('DataTble')
                 .select('*').eq('contact',inputtext)
 
-            console.log('----',DataTble)			
+			if(!DataTble || DataTble.length==0)			
+			{
+				alert("Record !Found")
+				isupdate=false
+				return
+			}
 			if (DataTble.length>1) {
 				DataTble.forEach(rr => {
 					optionList.push(rr)
@@ -65,10 +69,14 @@ function capturePhoto() {
 			}
 			else{
 				dtRecord=DataTble[0]
+				isupdate=true
+			}
+			if(dtRecord && dtRecord?.photo){
+				photoURL=`https://ccfhpzusawtgiojavhxh.supabase.co/storage/v1/object/public/form-photo/${dtRecord?.photo}`
 			}
             error_mesg=''
         } catch (error) {
-            console.log('****',error)            
+            console.log('****',error)
             error_mesg=error
         }
         finally{
@@ -78,7 +86,56 @@ function capturePhoto() {
  const fetchByNumber=async(ee)=>{
 	fetchRecord(ee.target.value)
  } 
+const updateRecord=async()=>{
+		try {
+		loading=true
+		const { data: userData, error: userError } = await supabase
+		  .from('DataTble')
+		  .update(dtRecord).eq('id',dtRecord.id);
+		if (userError) {
+		  console.error('Error saving user data:', userError.message);
+		  mesg=''
+		  error_mesg=userError.message
+		  return;
+		}
+		mesg='Form submitted successfully!';
+		error_mesg=''
+		dtRecord={
+			name:'',
+			addr:'',city:'',
+
+			contact:'',
+			aadhar_number:'',
+			photo:'',
+			comment:'',other:''
+		} ;
+
+		photo=null
+		photoURL=''
+	  } catch (error) {
+		mesg=''
+		error_mesg=error.message
+		console.error('An unexpected error occurred:', error.message);
+	  } 
+	  finally{
+		loading=false
+	  }		
+	}
+
+
+
+
+
+
+
+
+
   const onsubmit=async()=>{
+	if(isupdate){
+		console.log('****',dtRecord)		
+		updateRecord()
+		return
+	}
 	try {
 		loading=true
 		const { data: photoData, error: photoError } = await supabase.storage
@@ -102,11 +159,11 @@ function capturePhoto() {
 		mesg='Form submitted successfully!';
 		error_mesg=''
 		dtRecord={
-		
 			name:'',
 			addr:'',city:'',
 			contact:'',
 			aadhar_number:'',
+
 			photo:'',
 			comment:'',other:''
 		} ;
@@ -204,7 +261,6 @@ function capturePhoto() {
 		<div class="mb-4">
 			<label class="block ml-2 font-medium mb-2">Any Comment</label>
 		  	<input type="text" bind:value={dtRecord.comment} class="input input-bordered w-full"/>
-
 		</div>
 		<div class="flex justify-end border border-primary shadow p-2">
 		<button type="submit" class="btn btn-primary w-full md:w-48 p-1">Submit</button></div>
@@ -225,14 +281,5 @@ function capturePhoto() {
         <button class="btn btn-ghost" on:click={() => isOpenDlg =false}>Cancel</button>
       </div>
     </div>
-
-
-
-
-
-
-
-
-
 </div>
 {/if}
