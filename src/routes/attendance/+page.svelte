@@ -103,8 +103,8 @@ const updateRecord=async()=>{
 		error_mesg=''
 		dtRecord={
 			name:'',
-			addr:'',city:'',
-
+			addr:'',
+			city:'',
 			contact:'',
 			aadhar_number:'',
 			photo:'',
@@ -122,22 +122,11 @@ const updateRecord=async()=>{
 		loading=false
 	  }		
 	}
-
-
-
-
-
-
-
-
-
   const onsubmit=async()=>{
-	if(isupdate){
-		console.log('****',dtRecord)		
-		updateRecord()
-		return
-	}
 	try {
+		if (dtRecord.id) {
+			delete dtRecord.id
+		}
 		loading=true
 		const { data: photoData, error: photoError } = await supabase.storage
 		  .from('form-photo')
@@ -264,6 +253,10 @@ const updateRecord=async()=>{
 		  	<input type="text" bind:value={dtRecord.comment} class="input input-bordered w-full"/>
 		</div>
 		<div class="flex justify-end border border-primary shadow p-2">
+
+
+
+		<button on:click={updateRecord} type="button" class="btn btn-secondary w-full md:w-48 p-1">Update</button>	
 		<button type="submit" class="btn btn-primary w-full md:w-48 p-1">Submit</button></div>
 	  </form>
 </div>
