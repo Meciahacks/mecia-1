@@ -52,7 +52,7 @@ let config = {
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);        
     })
     const resetQR=()=>{
-        html5QrcodeScanner.clear()
+        html5QrcodeScanner.clear() 
         currentRecord=''
         html5QrcodeScanner = new Html5QrcodeScanner("reader", config,false);
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);        

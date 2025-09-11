@@ -214,6 +214,7 @@ const updateRecord=async()=>{
 					<option value="MALE">MALE</option>
 					<option value="FEMALE">FEMALE</option>
 					<option value="SPONSOR">SPONSOR</option>
+					<option value="VOLUNTEER">VOLUNTEER</option>
 				</select>
 			</div>
 		</div>

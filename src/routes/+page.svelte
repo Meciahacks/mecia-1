@@ -2,15 +2,16 @@
 // @ts-nocheck
 
 import {onMount} from "svelte";
+import logobg_voluntr from "$lib/images/bg_volantr.png"
 import logo from '$lib/images/logo.png'
 import logobg_male from '$lib/images/bg_male.png'
 import logobg_female from '$lib/images/bg_female (2).png'
 import logobg_sponsor from '$lib/images/bg_sponsor.png'
 import {toDataURL} from 'qrcode'
 import {supabase} from '../auth'
-	import { goto } from "$app/navigation";
-let dataTble,currRecord=null
+import { goto } from "$app/navigation";
 
+let dataTble,currRecord=null
 let currentPage=0,perPage=20
 let stRecord=currentPage,endRecord=stRecord+perPage-1
 let totalPage=1,loading=false
@@ -46,10 +47,9 @@ const fetchTble=async()=>{
 			dbquery1=dbquery1.not('city','ilike','Vasad')
 		else
 			dbquery1=dbquery1.ilike('city','%vasad%')
-
 		let { data: dataTble1,count:count, error } = await dbquery1.range(stRecord,endRecord)
 		if(dataTble1){
-			dataTble=dataTble1		
+			dataTble=dataTble1			
 			totalPage=Math.ceil(count/perPage)				
 			totalCount=count
 		}
@@ -77,8 +77,7 @@ const generateCanvas=(record) =>{
 			// 
             // Fill background
 			const logobg1 = new Image();			
-
-			logobg1.src = (record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female);
+			logobg1.src = (record.category=='VOLUNTEER')?logobg_voluntr:((record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female));
             logobg1.onload = ()=> {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(logobg1,-12,0, canvas.width+24, canvas.height+2)
@@ -151,8 +150,11 @@ const generateCanvas=(record) =>{
 				// ctx.fillStyle='#ffd008'
 				// ctx.fillRect(0,canvas.height-48,canvas.width,48)
 				
+				ctx.fillText('Volunteer',canvas.width/2+5,canvas.height-50)
 				ctx.fillText('૨૦૨૫',canvas.width/2+5,canvas.height-28)
+				// 
 				// ctx.restore()
+				
 
 			};
         }
@@ -206,6 +208,8 @@ const generateCanvas=(record) =>{
 	const removeRecord=async()=>{
 		try {
 			loading=true
+
+
 			const { error } = await supabase
 			.from('DataTble')
 			.delete()
@@ -288,6 +292,7 @@ const generateCanvas=(record) =>{
 			<option>MALE</option>
 			<option>FEMALE</option>
 			<option>SPONSOR</option>
+			<option>VOLUNTEER</option>
 		</select>
 	</div>
 	<div class="bg-primary text-primary-content text-xl p-2 font-bold text-center">Total Entries Done:{totalCount}</div>
@@ -305,7 +310,7 @@ const generateCanvas=(record) =>{
 		</tr>
 		</thead>
 		<tbody>
-			{#each dataTble as record}
+		{#each dataTble as record}
 		<tr>
 			<td class='text-base-content text-center'>
 			<div class="flex items-center gap-3">
@@ -359,12 +364,6 @@ const generateCanvas=(record) =>{
 	
 	</div>
 {/if} 
-
-
-
-
-
-
 
 <dialog id="my_modal_5" class={ recordToRemove?"modal modal-open modal-bottom sm:modal-middle":"modal modal-bottom sm:modal-middle"}>
 	<div class="modal-box">
