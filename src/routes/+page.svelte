@@ -149,8 +149,9 @@ const generateCanvas=(record) =>{
 				// ctx.save()
 				// ctx.fillStyle='#ffd008'
 				// ctx.fillRect(0,canvas.height-48,canvas.width,48)
-				
-				ctx.fillText('Volunteer',canvas.width/2+5,canvas.height-50)
+				console.log(record)				
+				if(record.category=='VOLUNTEER')
+					ctx.fillText('Volunteer',canvas.width/2+5,canvas.height-50)
 				ctx.fillText('૨૦૨૫',canvas.width/2+5,canvas.height-28)
 				// 
 				// ctx.restore()
