@@ -89,7 +89,7 @@ const generateCanvas=(record) =>{
 				const footHeight = 40;  // Set footer height
 				// 
 				// Add title on the left (align vertically center in header)
-				let fontcolor=record.category=='MALE'?"#eef":'#fff'
+				let fontcolor=record.category=='MALE'?"#eef":(record.category=='VOLUNTEER'?'#002':'#fff')
 				ctx.font = "bold 14px courier";
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
@@ -177,7 +177,7 @@ const generateCanvas=(record) =>{
 		const encoded=await loadImageAsBase(fetchPhotoUrl(record.photo))
 		img1.src = encoded
 		
-		let fontcolor=record.category=='MALE'?"#eef":'#fff'
+		let fontcolor=record.category=='MALE'?"#eef":(record.category=='VOLUNTEER'?'#002':'#fff')
 		img2.src = await getQR(record.uuid,fontcolor)
 		img1.onload = function () {
 			img2.onload = function () {
