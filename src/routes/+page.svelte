@@ -7,7 +7,10 @@ import logo from '$lib/images/logo.png'
 import logobg_male from '$lib/images/bg_male.png'
 import logobg_female from '$lib/images/bg_female (2).png'
 import logobg_sponsor from '$lib/images/bg_sponsor.png'
+import logobg_trustee from '$lib/images/guest_trustee.png'
 import {toDataURL} from 'qrcode'
+
+
 import {supabase} from '../auth'
 import { goto } from "$app/navigation";
 
@@ -67,6 +70,7 @@ const fetchTble=async()=>{
 		loading=false
 	}
 }
+
 onMount(()=>{
 	fetchTble()
 })
@@ -77,7 +81,7 @@ const generateCanvas=(record) =>{
 			// 
             // Fill background
 			const logobg1 = new Image();			
-			logobg1.src = (record.category=='VOLUNTEER')?logobg_voluntr:((record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female));
+			logobg1.src = (record.category=='TRUSTEE')?logobg_trustee:((record.category=='VOLUNTEER')?logobg_voluntr:((record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female)))
             logobg1.onload = ()=> {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(logobg1,-12,0, canvas.width+24, canvas.height+2)
@@ -94,35 +98,43 @@ const generateCanvas=(record) =>{
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle"
-				
 				ctx.save();						
 				ctx.translate(20, canvas.width);
 				ctx.rotate(-Math.PI / 2);
 				ctx.fillText("આદ્યાશક્તિ ગરબા મહોત્સવ, વાસદ", 0, 10);	
 				ctx.restore();
-				if(record.category=='SPONSOR'){
+				if(record.category=='TRUSTEE'){
+						ctx.save()
+						ctx.textAlign='center'
+						ctx.font="bold 28px courier"
+						ctx.fillText('GUEST',canvas.width/2,70)
+						ctx.restore()
+					}
+
+					if(record.category=='SPONSOR'){
 					ctx.save()
 					ctx.font="bold 20px courier"
 					ctx.fillText('SPONSOR',canvas.width/2,70)
 					ctx.restore()
+			
+					
+
+					
 					ctx.save()
 					ctx.textAlign='center'
 					ctx.textBaseline='middle'
 					ctx.font="bold 18px courier"
-
 					const temp1=record.name.split(/[\s,.//()]/)
 					for(let indx=0;indx<temp1.length;indx++)
 						ctx.fillText(temp1[indx],canvas.width/2+5,(canvas.height-temp1.length*20-50)+indx*20)
 					ctx.restore()
 				}
-
 				else{	
 					ctx.font = "bold 18px courier";
 					if(record.name.length>20){
 						const temp1=record.name.split(" ")
 						record.name=temp1[0]+" "+temp1[1]
 					}
-
 					ctx.save();						
 					ctx.translate(20, canvas.width);
 					ctx.rotate(-Math.PI / 2);
@@ -149,14 +161,12 @@ const generateCanvas=(record) =>{
 				// ctx.save()
 				// ctx.fillStyle='#ffd008'
 				// ctx.fillRect(0,canvas.height-48,canvas.width,48)
-				console.log(record)				
+				// console.log(record)				
 				if(record.category=='VOLUNTEER')
 					ctx.fillText('Volunteer',canvas.width/2+5,canvas.height-50)
 				ctx.fillText('૨૦૨૫',canvas.width/2+5,canvas.height-28)
 				// 
 				// ctx.restore()
-				
-
 			};
         }
 	const drawMiddleImage=async(record,ctx, canvas, headerHeight, footHeight) =>{
@@ -189,7 +199,8 @@ const generateCanvas=(record) =>{
 				const startY = 25+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
 				// Draw the two images side by side
-				ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
+				if(record.category!=='TRUSTEE')
+					ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
 				ctx.drawImage(img2, startX, canvas.height-140, imgWidth, imgHeight);
 			};
 
@@ -293,6 +304,7 @@ const generateCanvas=(record) =>{
 			<option>MALE</option>
 			<option>FEMALE</option>
 			<option>SPONSOR</option>
+			<option>TRUSTEE</option>
 			<option>VOLUNTEER</option>
 		</select>
 	</div>
