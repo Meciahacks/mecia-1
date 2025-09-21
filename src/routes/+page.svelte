@@ -8,8 +8,8 @@ import logobg_male from '$lib/images/bg_male.png'
 import logobg_female from '$lib/images/bg_female (2).png'
 import logobg_sponsor from '$lib/images/bg_sponsor.png'
 import logobg_trustee from '$lib/images/guest_trustee.png'
+import logobg_member from '$lib/images/gg.png'
 import {toDataURL} from 'qrcode'
-
 
 import {supabase} from '../auth'
 import { goto } from "$app/navigation";
@@ -81,7 +81,9 @@ const generateCanvas=(record) =>{
 			// 
             // Fill background
 			const logobg1 = new Image();			
-			logobg1.src = (record.category=='TRUSTEE')?logobg_trustee:((record.category=='VOLUNTEER')?logobg_voluntr:((record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female)))
+			logobg1.src =(record.category=='Commitee Member')?logobg_member:
+			
+			((record.category=='TRUSTEE')?logobg_trustee:((record.category=='VOLUNTEER')?logobg_voluntr:((record.category=='SPONSOR')?logobg_sponsor:((record.category=='MALE')?logobg_male:logobg_female))))
             logobg1.onload = ()=> {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(logobg1,-12,0, canvas.width+24, canvas.height+2)
@@ -93,7 +95,7 @@ const generateCanvas=(record) =>{
 				const footHeight = 40;  // Set footer height
 				// 
 				// Add title on the left (align vertically center in header)
-				let fontcolor=record.category=='MALE'?"#eef":(record.category=='VOLUNTEER'?'#002':'#fff')
+				let fontcolor=record.category=='MALE'?"#eef":((record.category=='VOLUNTEER'||record.category=='Commitee Member')?'#002':'#fff')
 				ctx.font = "bold 14px courier";
 				ctx.fillStyle = fontcolor;
 				ctx.textAlign = "center";
@@ -103,11 +105,14 @@ const generateCanvas=(record) =>{
 				ctx.rotate(-Math.PI / 2);
 				ctx.fillText("આદ્યાશક્તિ ગરબા મહોત્સવ, વાસદ", 0, 10);	
 				ctx.restore();
-				if(record.category=='TRUSTEE'){
+				if(record.category=='Commitee Member'){
+
+				}
+				if(record.category=='TRUSTEE' || record.category=='Commitee Member'){
 						ctx.save()
 						ctx.textAlign='center'
 						ctx.font="bold 28px courier"
-						ctx.fillText('GUEST',canvas.width/2,70)
+						ctx.fillText(record.category=='TRUSTEE'?'GUEST':'NEST',canvas.width/2,70)
 						ctx.restore()
 					}
 
@@ -187,7 +192,7 @@ const generateCanvas=(record) =>{
 		const encoded=await loadImageAsBase(fetchPhotoUrl(record.photo))
 		img1.src = encoded
 		
-		let fontcolor=record.category=='MALE'?"#eef":(record.category=='VOLUNTEER'?'#002':'#fff')
+		let fontcolor=record.category=='MALE'?"#eef":((record.category=='VOLUNTEER'||record.category=='Commitee Member')?'#002':'#fff')
 		img2.src = await getQR(record.uuid,fontcolor)
 		img1.onload = function () {
 			img2.onload = function () {
@@ -199,7 +204,7 @@ const generateCanvas=(record) =>{
 				const startY = 25+ headerHeight + (availableHeight - imgHeight) / 2
 				// 
 				// Draw the two images side by side
-				if(record.category!=='TRUSTEE')
+				if(record.category!=='TRUSTEE' && record.category!='Commitee Member')
 					ctx.drawImage(img1, startX, startY-57, imgWidth, imgHeight);
 				ctx.drawImage(img2, startX, canvas.height-140, imgWidth, imgHeight);
 			};
@@ -305,7 +310,8 @@ const generateCanvas=(record) =>{
 			<option>FEMALE</option>
 			<option>SPONSOR</option>
 			<option>TRUSTEE</option>
-			<option>VOLUNTEER</option>
+			<option>VOLUNTEER</option>	
+			<option>Commitee Member</option>
 		</select>
 	</div>
 	<div class="bg-primary text-primary-content text-xl p-2 font-bold text-center">Total Entries Done:{totalCount}</div>
